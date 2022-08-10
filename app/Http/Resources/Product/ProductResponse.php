@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Product;
 
+use App\Http\Resources\Category\CategoryResponse;
 use App\Models\Product;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,6 +23,7 @@ class ProductResponse extends JsonResource
             'description' => $this->description,
             'picture' => $this->picture,
             'price' => $this->price,
+            'categories' => CategoryResponse::collection($this->whenLoaded('categories')),
             'publish_at' => $this->publish_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
