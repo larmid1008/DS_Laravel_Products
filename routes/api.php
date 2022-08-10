@@ -10,3 +10,13 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+use App\Http\Controllers\Api\v1\ProductsController;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('v1')->group(function () {
+    Route::prefix('/products')->group(function () {
+        Route::get('/', [ProductsController::class, 'index']);
+    });
+});
