@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\DTO\Product\CreateProductDTO;
 use App\Http\DTO\Product\DeleteProductDTO;
+use App\Http\Filters\ProductCategoryIdFilter;
+use App\Http\Filters\ProductCategoryNameFilter;
 use App\Http\Filters\ProductPublishFilter;
 use App\Http\Handlers\Product\CreateProductHandler;
 use App\Http\Handlers\Product\DeleteProductHandler;
@@ -30,22 +32,13 @@ class ProductsController extends Controller
     {
         $products = QueryBuilder::for(Product::class)
             ->allowedFilters([
-                AllowedFilter::callback('category_id', function (Builder $builder, $value) {
-                    $builder->whereHas('categories', function (Builder $builder) use ($value) {
-                        $builder->whereIn('categories.id', is_array($value) ? $value : [$value]);
-                    });
-                }),
-                AllowedFilter::callback('category_name', function (Builder $builder, $value) {
-                    $builder
-                        ->whereHas('categories', function (Builder $builder) use ($value) {
-                            $builder->where('categories.name', 'ilike', "%$value%");
-                        });
-                }),
+                AllowedFilter::custom('category_id', new ProductCategoryIdFilter),
+                AllowedFilter::callback('category_name', new ProductCategoryNameFilter),
                 AllowedFilter::callback('price_start', function (Builder $builder, $value) {
-                   $builder->where('price', '>=', $value);
+                    $builder->where('price', '>=', $value);
                 }),
                 AllowedFilter::callback('price_end', function (Builder $builder, $value) {
-                   $builder->where('price', '<=', $value);
+                    $builder->where('price', '<=', $value);
                 }),
                 /**
                  * WITH
